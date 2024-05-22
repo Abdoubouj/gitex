@@ -29,10 +29,10 @@
   color: #252525;
 }
 
-input::placeholder{
+input[type="text"]::placeholder , input[type="email"]::placeholder{
   color: #cbcbcb !important;
 }
-input:focus{
+input[type="text"]:focus , input[type="email"]:focus{
   outline: 4px solid #0466c84d !important;
   border: 1px solid #0466c8;
 }
@@ -43,20 +43,42 @@ input.error:focus , select.error:focus{
   border: 1px solid red;
   outline: 4px solid rgba(255, 48, 48, 0.486) !important;
 }
-input , select{
-  background: #ffffff !important;
+input[type="text"],input[type="email"] , select{
+  /* background: #ffffff !important; */
   padding: 12px !important;
   border-radius: 12px !important;
 }
-button{
-  padding: 10px 35px !important;
-  font-size: 18px !important;
+button.submitbtn{
+  padding: 13px 38px !important;
+  font-size: 22px !important;
   border-radius: 12px !important;
   font-weight: 300 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 10px !important;
   background: #0466c8 !important;
   border: 1px solid #0466c8 !important;
 }
-
+button.submitbtn:hover{
+  background: #00407f !important;
+}
+.checkBtn{
+  font-size: 15px !important;
+  padding: 0 !important;
+  display: inline-block;
+  width: 180px !important;
+  text-align: center !important;
+  background: #068a32 !important;
+  border: 1px solid #04541f !important;
+  transition: 0.3s ease-in;
+}
+.checkBtn:hover{
+  background: #068a32 !important;
+}
+label{
+  text-transform: capitalize;
+  font-weight: 600;
+}
 .alert{
   width:300px !important;
   margin:5rem auto;
