@@ -6,12 +6,15 @@ import axios from "axios";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { IoGiftOutline } from "react-icons/io5";
 import { getProfileGifts } from "../Helpers/helper";
+import { TbLoaderQuarter } from "react-icons/tb";
 const RegisterForm = () => {
   const [error, setError] = useState(null);
-  const [isLoading , setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadPromoCode, setIsLoadPromoCode] = useState(false);
+  const [isLoadForm , setIsLoadForm] = useState(false);
   const [isValidCode, setIsValidCode] = useState({
-    success:false,
-    message:""
+    success: false,
+    message: "",
   });
   const [gifts, setGifts] = useState([]);
   const [success, setSuccess] = useState({
@@ -23,6 +26,7 @@ const RegisterForm = () => {
   const { errors, isDirty, isValid } = formState;
   const onSubmit = async () => {
     const userData = getValues();
+    setIsLoadForm(true);
     try {
       const response = await axios.post(
         "https://nextgreydart87.conveyor.cloud/api/Users",
@@ -30,15 +34,21 @@ const RegisterForm = () => {
       );
       if (response.status === 200) {
         setSuccess({ ...success, isSuccess: true, message: response.data });
+        setIsLoadForm(false);
       }
     } catch (err) {
       if (err?.response?.status === 400) {
         setError(err?.response?.data);
+        setIsLoadForm(false);
+      }else{
+        setError(err?.message)
+        setIsLoadForm(false);
       }
     }
   };
 
   const checkPromoCode = async () => {
+    setIsLoadPromoCode(true);
     try {
       const response = await axios.post(
         `https://nextgreydart87.conveyor.cloud/api/Users/check-promocode/${watch(
@@ -47,17 +57,21 @@ const RegisterForm = () => {
       );
       if (response.status === 200) {
         setIsValidCode({
-          success:true,
-          message:response?.data
+          success: true,
+          message: response?.data,
         });
+        setIsLoadPromoCode(false);
       }
     } catch (err) {
+      console.log(err);
       setIsValidCode({
-        success:false,
-        message:err?.response?.data
+        success: false,
+        message: err?.response?.data || err?.message,
       });
+      setIsLoadPromoCode(false);
     }
   };
+  // console.log(isValidCode);
 
   const profile = watch("profile");
   useEffect(() => {
@@ -70,8 +84,8 @@ const RegisterForm = () => {
     };
     getGifts();
   }, [profile]);
-  console.log(success);
-  console.log(error);
+  // console.log(success);
+  // console.log(error);
 
   return (
     <>
@@ -106,14 +120,24 @@ const RegisterForm = () => {
                         })}
                       />
                       <Button className="checkBtn" onClick={checkPromoCode}>
-                        <FaRegCheckCircle /> check code
+                        {isLoadPromoCode ? (
+                          <TbLoaderQuarter className="loader" />
+                        ) : (
+                          <FaRegCheckCircle />
+                        )}
+                        check code
                       </Button>
                     </div>
                     <p className="text-danger mt-1">
                       {errors && errors["promoCode"]?.message}
                     </p>
-                    <p className={`${isValidCode?.success ? 'text-success' : 'text-danger'} mt-1 `}>{isValidCode?.message}</p>
-                    <p className="text-danger mt-1">{error && error}</p>
+                    <p
+                      className={`${
+                        isValidCode?.success ? "text-success" : "text-danger"
+                      } mt-1 `}
+                    >
+                      {isValidCode?.message}
+                    </p>
                   </Form.Group>
                 </div>
                 <div className="row mb-4">
@@ -149,7 +173,7 @@ const RegisterForm = () => {
                   </Form.Group>
                 </div>
                 <div className="row mb-4">
-                <Form.Group className="col mb-3" controlId="formBasicEmail">
+                  <Form.Group className="col mb-3" controlId="formBasicEmail">
                     <Form.Label>Email address</Form.Label>
                     <Form.Control
                       className={`${errors?.email && "error"}`}
@@ -199,7 +223,6 @@ const RegisterForm = () => {
                       {errors && errors["profile"]?.message}
                     </p>
                   </Form.Group>
-                  
                 </div>
                 <div className="row mb-4">
                   <Form.Group className="col mb-3" controlId="formBasicEmail">
@@ -217,46 +240,47 @@ const RegisterForm = () => {
                       {errors && errors["organizationName"]?.message}
                     </p>
                   </Form.Group>
-                  {!isLoading &&
-                  <Form.Group className="col mb-3" controlId="formBasicEmail">
-                    <Form.Label>gifts</Form.Label>
-                    <Form.Select
-                      className={`${errors?.giftId && "error"}`}
-                      type="text"
-                      // placeholder="Enter giftId"
-                      name="giftId"
-                      {...register("giftId", {
-                        required: "the gift is required",
-                        validate: (field) => {
-                          return (
-                            field !== "SELECT YOUR GIFT" ||
-                            "the gift field is required !"
-                          );
-                        },
-                      })}
-                    >
-                      <option value="SELECT YOUR GIFT" selected disabled>
-                        SELECT YOUR GIFT
-                      </option>
-                      {gifts?.map((gift) => (
-                        <option value={gift?.id}>{gift?.giftName}</option>
-                      ))}
-                    </Form.Select>
-                    <p className="text-danger mt-1">
-                      {errors && errors["gifts"]?.message}
-                    </p>
-                  </Form.Group>
-                  }
+                  {!isLoading && (
+                    <Form.Group className="col mb-3" controlId="formBasicEmail">
+                      <Form.Label>gifts</Form.Label>
+                      <Form.Select
+                        className={`${errors?.giftId && "error"}`}
+                        type="text"
+                        // placeholder="Enter giftId"
+                        name="giftId"
+                        {...register("giftId", {
+                          required: "the gift is required",
+                          validate: (field) => {
+                            return (
+                              field !== "SELECT YOUR GIFT" ||
+                              "the gift field is required !"
+                            );
+                          },
+                        })}
+                      >
+                        <option value="SELECT YOUR GIFT" selected disabled>
+                          SELECT YOUR GIFT
+                        </option>
+                        {gifts?.map((gift) => (
+                          <option value={gift?.id}>{gift?.giftName}</option>
+                        ))}
+                      </Form.Select>
+                      <p className="text-danger mt-1">
+                        {errors && errors["gifts"]?.message}
+                      </p>
+                    </Form.Group>
+                  )}
                 </div>
                 <div className="row mb-4">
                   <Form.Check // prettier-ignore
-                    type='checkbox'
-                    id='inline-checkbox'
+                    type="checkbox"
+                    id="inline-checkbox"
                     inline
-                    label='By checking this box, I confirm that I agree to share the data I have entered in the form with DYN IT Maroc as part of the Gitex Africa event.'
+                    label="By checking this box, I confirm that I agree to share the data I have entered in the form with DYN IT Maroc as part of the Gitex Africa event."
                   />
                 </div>
               </div>
+              <p className="text-danger mt-1">{error && error}</p>
               <div className="d-flex justify-content-center">
                 <Button
                   disabled={Object.keys(errors).length > 0 ? true : false}
@@ -264,7 +288,11 @@ const RegisterForm = () => {
                   className="submitbtn"
                   type="submit"
                 >
+                  {isLoadForm ?
+                  <TbLoaderQuarter className="loader" />
+                  :
                   <IoGiftOutline />
+                  }
                   Claim your gift
                 </Button>
               </div>

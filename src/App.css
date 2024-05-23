@@ -65,12 +65,26 @@ button.submitbtn:hover{
 .checkBtn{
   font-size: 15px !important;
   padding: 0 !important;
-  display: inline-block;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 10px !important;
   width: 180px !important;
-  text-align: center !important;
+  justify-content: center;
+  /* text-align: center !important; */
   background: #068a32 !important;
   border: 1px solid #04541f !important;
   transition: 0.3s ease-in;
+}
+.loader{
+   animation: loader 2s infinite;
+}
+@keyframes loader {
+   from{
+    transform: rotate(0);
+   }
+   to{
+    transform: rotate(360deg);
+   }
 }
 .checkBtn:hover{
   background: #068a32 !important;
